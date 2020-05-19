@@ -8,7 +8,7 @@ if __name__ == '__main__':
         description = """
         To be run with command line (add -h for help):
 
-        <you>:~/<path>/<to>/apps$ python -m <app>.planet.setup.createviews -h
+        <you>:~/<path>/<to>/apps$ python -m <app>.planetstore.setup.createviews -h
 
         """,
         formatter_class = argparse.RawTextHelpFormatter

@@ -16,7 +16,7 @@ if __name__ == '__main__':
         description = """
         To be run with command line (add -h for help):
 
-        <you>:~/<path>/<to>/apps$ python -m <app>.planet.setup.createdb -h
+        <you>:~/<path>/<to>/apps$ python -m <app>.planetstore.setup.createdb -h
 
         """,
         formatter_class = argparse.RawTextHelpFormatter
@@ -48,4 +48,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     dbgeany()
-    print("Now run command: `python -m {}.planet.models`".format(APP_NAME))
+    print("Now run command: `python -m {}.planetstore.createviews`".format(APP_NAME))

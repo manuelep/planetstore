@@ -8,7 +8,7 @@ This file is provided as an example:
 import os
 
 # db settings
-DB_URI = "postgres://username:password@localhost/test"
+# DB_URI = "postgres://username:password@localhost/test"
 DB_POOL_SIZE = 10
 DB_MIGRATE = False
 

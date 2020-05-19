@@ -42,8 +42,8 @@ class BulkCopyer(object):
 
         if traceback is None:
             # foo = {}
-            # if not current.plugins.planet.log_level is None:
-            #     foo['level'] = current.plugins.planet.log_level
+            # if not current.plugins.planetstore.log_level is None:
+            #     foo['level'] = current.plugins.planetstore.log_level
 
             # with timeLoggerDecorator("Coping to {}".format(self.table_name), **foo):
             content = self.csv.getvalue()
