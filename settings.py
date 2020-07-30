@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 This is an optional file that defined app level settings such as:
 - database settings
@@ -5,12 +7,22 @@ This is an optional file that defined app level settings such as:
 - i18n settings
 This file is provided as an example:
 """
+
 import os
 
-# db settings
-# DB_URI = "postgres://username:password@localhost/test"
-DB_POOL_SIZE = 10
-DB_MIGRATE = False
+from ..settings import DB_URI
+from ..settings import DB_MIGRATE
+from ..settings import DB_POOL_SIZE
+
+# If you need a separete database just add a parallel settings_private.py file
+# with the following assigned variables adapted to your needs:
+"""
+# -*- coding: utf-8 -*-
+db settings
+DB_URI = "postgres://<PG user>:<password>@<host name>/<db name>"
+DB_POOL_SIZE = <int>
+DB_MIGRATE = <True/False>
+"""
 
 # try import private settings
 try:

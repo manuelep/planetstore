@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .import settings
+from . import settings
 from ..settings import DB_FOLDER
 from py4web import DAL
 from ..common import T
