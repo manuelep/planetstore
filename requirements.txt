@@ -3,3 +3,5 @@ overpy
 shapely
 ujson
 pyproj
+mercantile
+lxml

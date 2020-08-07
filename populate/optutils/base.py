@@ -13,6 +13,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 
 from .geom import Bbox, BASE_AREA_DIMENSION
+from ...tools.tile import BASE_DIM, tilebbox
 
 class MaxRetriesReached(overpy.exception.OverPyException):
     """ Courtesy of: https://github.com/DinoTools/python-overpy/blob/31c6e689c0d49d6617e020597914f47a0bc98f04/overpy/exception.py#L40
@@ -273,6 +274,44 @@ class Turbo(object):
             **{"from": "_"}
         )
         return etree.tostring(Root, pretty_print=pretty_print)
+
+    @staticmethod
+    def optimize_centralized_query_by_base_tile(lon, lat, qconditions, bdim=BASE_DIM, buffer=3, newer_than=None):
+        """
+        lon @float :
+        lat @float :
+        qconditions  @list : Query conditions given by distance from point;
+        bdim @float : Base tile dimention;
+        buffer @integer : Number of buffer tiles;
+        newer_than @string : "%Y-%m-%dT%H:%M:%SZ"
+
+        Examples:
+
+        qconditions = [{
+            "query": [[{"k": ..., "modv": ..., "v/regv": ...}, ...], ...],
+            "distance": ...,
+            "gtypes": [...], # Optional. Possible values: "node", "way", "relation", "way-node", node-relation", "relation-way", "relation-relation", "relation-backwards"
+            ""
+        }, ...]
+        """
+
+        grouping_func = lambda cnd: (int(cnd['distance']//bdim), cnd['gtypes'],)
+
+        def _main():
+            _grouped_queryes_ = groupby(sorted(qconditions, key=grouping_func), key=grouping_func)
+            for gd, _cnds in _grouped_queryes_:
+                _dist, gtypes = gd
+                max_dist = (_dist+1)*bdim
+                bbox = tilebbox(max_dist, lon, lat, bdim=bdim, buffer=buffer, format='osm')
+                allcnds = reduce(lambda a,b: a+b, (tuple(i["query"]) for i in _cnds))
+                yield {
+                    "bbox": bbox,
+                    "query": tuple(dict([(tuple(map(lambda j: tuple(j.items()), i)), i,) for i in allcnds]).values()),
+                    "gtypes": gtypes,
+                    "newer_than": newer_than
+                }
+
+        return _main
 
     @staticmethod
     def optimize_centralized_query(lon, lat, qconditions, buffer=None):
