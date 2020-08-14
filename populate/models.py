@@ -28,7 +28,7 @@ db.define_table("tracked_tile",
         # required = True, # notnull=True,
         update = now,
         default = now,
-        compute = lambda _: now(),
+        # compute = lambda _=None: now(),
         writable = False, readable = True
     ),
     Field("is_active", "boolean", default=True, readable=False, writable=False),
@@ -39,6 +39,10 @@ db.define_table("tracked_tile",
         props = {'created': row.tracked_tile.created_on, 'updated': row.tracked_tile.modified_on}
     )),
     # Field.Virtual('last_update', lambda row: get_last_update(row.tile.uri))
+)
+
+db.define_table("queued_tile",
+    Field("tile_id", "reference tracked_tile", unique=True)
 )
 
 def track_tiles(lon, lat, maxdist):
