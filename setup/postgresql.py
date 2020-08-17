@@ -125,7 +125,7 @@ def setup_views():
         ST_Distance(ST_Transform(snode.geom, 3857), ST_Transform(tnode.geom, 3857)) as len,
         snode.geom as snode,
         tnode.geom as tnode
-       FROM
+    FROM
         info,
         info as sinfo,
         info as tinfo,
@@ -134,7 +134,7 @@ def setup_views():
         data_source,
         way_node as swnode,
         way_node as twnode
-      WHERE
+    WHERE
         data_source.source_name = info.source_name AND
         info.id = swnode.info_id AND
         sinfo.id = snode.info_id AND
@@ -153,13 +153,14 @@ def setup_views():
         subq.tags,
         subq.properties,
         subq.source_id,
-        ST_BuildArea(way) as geom,
+        ST_BuildArea(subq.way) as geom,
+        subq.way,
         st_centroid(subq.way) AS centroid
     FROM
         ({}) AS subq
     WHERE
-        ST_IsClosed(way) AND
-        ST_ASText(ST_BuildArea(way)) like 'POLYGON%'
+        ST_IsClosed(subq.way) AND
+        ST_ASText(ST_BuildArea(subq.way)) like 'POLYGON%'
     -- (((subq.tags::jsonb ? 'area')::boolean AND (subq.tags->>'area' <> 'no')) OR
     -- (subq.tags::jsonb ?| array['landuse', 'boundary', 'building'])::boolean)
     ;"""
@@ -192,7 +193,8 @@ def setup_views():
             (array_agg(relinfo.tags))[1] as tags,
             (array_agg(relinfo.properties))[1] as properties,
             wayinfo.source_id as source_id,
-            relinfo.source_id as relation_source_id
+            relinfo.source_id as relation_source_id,
+            relation.role
         FROM
             data_source,
             info as relinfo,
@@ -205,17 +207,19 @@ def setup_views():
             node.id = way_node.node_id AND
             wayinfo.id = way_node.info_id AND
             relation.member_id = wayinfo.id AND
-            relinfo.id = relation.info_id
+            relinfo.id = relation.info_id AND
+            (relation.role = 'outer' OR relation.role = 'inner')
             --relation.role = 'outer'
         GROUP BY
             wayinfo.id,
             data_source.id,
             data_source.source_name,
             relinfo.id,
+            relation.role,
             wayinfo.source_id,
             way_node.info_id
-        ORDER BY relation_id
-    ) as subq WHERE ST_IsClosed(geom);""")
+        ORDER BY relation_id, relation.role DESC
+    ) as subq WHERE ST_IsClosed(subq.geom);""")
 
     setup_view("mpolys", """SELECT *,
         ST_MakePolygon(polys[1], polys[2:array_length(polys, 1)]) as geom,
@@ -228,8 +232,10 @@ def setup_views():
                 percentile_disc(0) WITHIN GROUP (ORDER BY source_id) as source_id,
                 (array_agg(tags))[1] as tags,
                 (array_agg(properties))[1] as properties,
-                array_agg(geom) as polys
+                array_agg(geom ORDER BY role DESC) as polys
             FROM _splitted_polys
-            GROUP BY relation_id) as subq""")
+            GROUP BY relation_id
+            ORDER BY relation_id
+        ) as subq""")
 
     db.commit()
