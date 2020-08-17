@@ -153,14 +153,16 @@ def setup_views():
         subq.tags,
         subq.properties,
         subq.source_id,
-        ST_MakePolygon(way) as geom,
+        ST_BuildArea(way) as geom,
         st_centroid(subq.way) AS centroid
     FROM
         ({}) AS subq
     WHERE
         ST_IsClosed(way) AND
-    (((subq.tags::jsonb ? 'area')::boolean AND (subq.tags->>'area' <> 'no')) OR
-    (subq.tags::jsonb ?| array['landuse', 'boundary', 'building'])::boolean);"""
+        ST_ASText(ST_BuildArea(way)) like 'POLYGON%'
+    -- (((subq.tags::jsonb ? 'area')::boolean AND (subq.tags->>'area' <> 'no')) OR
+    -- (subq.tags::jsonb ?| array['landuse', 'boundary', 'building'])::boolean)
+    ;"""
 
     setup_view("polys", polys_query_template.format(db(
         way_query
@@ -213,7 +215,7 @@ def setup_views():
             wayinfo.source_id,
             way_node.info_id
         ORDER BY relation_id
-    ) as subq;""")
+    ) as subq WHERE ST_IsClosed(geom);""")
 
     setup_view("mpolys", """SELECT *,
         ST_MakePolygon(polys[1], polys[2:array_length(polys, 1)]) as geom,
