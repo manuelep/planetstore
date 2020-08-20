@@ -8,9 +8,7 @@ This is an optional file that defined app level settings such as:
 This file is provided as an example:
 """
 
-import os
-
-from ..settings import DB_URI
+# from ..settings import DB_URI
 from ..settings import DB_MIGRATE
 from ..settings import DB_POOL_SIZE
 

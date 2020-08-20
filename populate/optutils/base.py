@@ -4,13 +4,15 @@ import os
 import hashlib
 import geojson
 import overpy
-from lxml import etree
+# from lxml import etree
+from xml.etree import ElementTree as etree
 from itertools import groupby
 from time import sleep
 from datetime import datetime
 from functools import reduce
 from urllib.request import urlopen
 from urllib.error import HTTPError
+from io import BytesIO
 
 from .geom import Bbox, BASE_AREA_DIMENSION
 from ...tools.tile import BASE_DIM, tilebbox
@@ -273,7 +275,11 @@ class Turbo(object):
             e="",geometry="skeleton", limit="", mode="meta", n="", order="id", s="", w="",
             **{"from": "_"}
         )
-        return etree.tostring(Root, pretty_print=pretty_print)
+        ff = BytesIO()
+        et = etree.ElementTree(Root)
+        et.write(ff, encoding='utf-8', xml_declaration=True)
+        return ff.getvalue().decode()
+        # return b'<?xml version="1.0" encoding="UTF-8"?>'+etree.tostring(Root, pretty_print=pretty_print)
 
     @staticmethod
     def optimize_centralized_query_by_base_tile(lon, lat, qconditions, bdim=BASE_DIM, buffer=3, newer_than=None):

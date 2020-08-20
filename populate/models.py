@@ -3,9 +3,10 @@
 import mercantile as mc
 
 from .tools import get_uri
-from ...models import db, Field
+from ..models import db
 from .tile import boxtiles
 
+from py4web import Field
 import datetime
 
 now = lambda: datetime.datetime.utcnow()
@@ -45,10 +46,10 @@ db.define_table("queued_tile",
     Field("tile_id", "reference tracked_tile", unique=True)
 )
 
-def track_tiles(lon, lat, maxdist):
+def track_tiles(lon, lat, maxdist, buffer=4):
     """ """
 
-    tiles = list(boxtiles(maxdist, lon, lat))
+    tiles = list(boxtiles(maxdist, lon, lat, buffer=buffer))
 
     get_uri = lambda x, y, z: db.tracked_tile.uri.compute({'xtile': x, 'ytile': y, 'zoom': z})
     _tiles_i_got = db(
@@ -67,7 +68,11 @@ def track_tiles(lon, lat, maxdist):
             # elif tiles_i_got[myuri].last_update is None:
             #     yield tiles_i_got[myuri].id
 
-    return list(_loopOtiles())
+    return {
+        'new': list(_loopOtiles()),
+        'old': [row.id for row in _tiles_i_got],
+        'tiles': tiles
+    }
 
 # if __name__=='__main__':
 #     track_tiles(8.938015, 44.405762, 0)

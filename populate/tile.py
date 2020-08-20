@@ -77,7 +77,7 @@ def tilebbox(dist, lon, lat, bdim=BASE_DIM, buffer=4, format=None):
     dist     @float : Search distance.
     lon      @float : Center longitude.
     lat      @float : Center latitude.
-    bdim     @float : Base time dimention in meters.
+    bdim     @float : Base tile dimention in meters.
     buffer @integer : Buffer dimention in times of bdim.
     format  @string : Output format
 
