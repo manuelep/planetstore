@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     try:
         from ...settings import DB_FOLDER, APP_NAME
-        from ..settings import DB_URI
+        # from ..settings import DB_URI
     except Exception as err:
         # raise
         message = """You are running this script without the necessary environment.

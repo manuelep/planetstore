@@ -69,7 +69,7 @@ def setup_views():
     setup_view("points",
         (db.info.id==db.node.info_id) & \
             (db.data_source.source_name==db.info.source_name) & \
-            "((info.tags IS NOT NULL) or (info.properties IS NOT NULL))",
+            "(((info.tags IS NOT NULL) AND (info.tags::text <> '{}'::text)) or ((info.properties IS NOT NULL) AND (info.properties::text <> '{}'::text)))",
 
         db.info.id.with_alias("id"),
         # Data source informations

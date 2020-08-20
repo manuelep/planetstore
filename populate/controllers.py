@@ -14,7 +14,10 @@ class limit_to_local(Fixture):
 @action('planet/populate/tracked_tiles')
 @action.uses(limit_to_local())
 def tracked_tiles():
-    res = db(db.tracked_tile.id>0).select()
+    res = db(
+        (db.tracked_tile.id>0) & \
+        (db.tracked_tile.created_on==db.tracked_tile.modified_on)
+    ).select()
     return {
         'type': 'FeatureCollection',
         'features': [row.feature for row in res]
