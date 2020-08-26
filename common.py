@@ -2,12 +2,12 @@
 
 from . import settings
 
-if hasattr(settings, 'DB_URI'):
+if not settings.DB_SHARED:
     from ..common import T
     from py4web import DAL
     # connect to db
     db = DAL(settings.DB_URI,
-        folder=DB_FOLDER, pool_size=settings.DB_POOL_SIZE, migrate=settings.DB_MIGRATE,
+        folder = settings.DB_FOLDER, pool_size=settings.DB_POOL_SIZE, migrate=settings.DB_MIGRATE,
         lazy_tables=False, check_reserved=False
     )
 else:
