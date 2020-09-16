@@ -79,7 +79,7 @@ class BaseParser(__Base__):
                     attributes = attributes,
                 **kw)
                 id = rec.id
-            logger.debug("Inserted info record with id: {}".format(id))
+            logger.debug(f"Inserted info record with id: {id}")
             return id
 
         if not hasattr(rec_or_sid, "update_record"):
