@@ -3,6 +3,9 @@
 from .tools import First
 from ..models import db
 
+from os import path
+import inspect
+
 def __replace_view(name, query):
     """ """
     sql = """CREATE OR REPLACE VIEW {name} AS {query}"""
@@ -238,4 +241,11 @@ def setup_views():
             ORDER BY relation_id
         ) as subq""")
 
+    db.commit()
+
+def setup_functions():
+    here = path.dirname(path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
+    with open(path.join(here, 'mercantile.sql')) as pgmercantile:
+        sql = pgmercantile.read()
+    db.executesql(sql)
     db.commit()

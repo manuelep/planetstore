@@ -25,7 +25,7 @@ if __name__ == '__main__':
         parser.print_help()
         raise Exception(message)
     else:
-        from .postgresql import setup_views
+        from .postgresql import setup_views, setup_functions
         # TODO: Cache postgresq super user credentials
         # from diskcache import Cache
         # from .postgresql import setup_views
@@ -39,5 +39,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    setup_functions()
     setup_views()
     print("That's it!")

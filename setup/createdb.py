@@ -5,7 +5,7 @@ def dbgeany():
         path = DB_FOLDER,
         cache = None
     )
-    dbcollector.collect(DB_URI, 'postgis', 'fuzzystrmatch')
+    dbcollector.collect(DB_URI, 'postgis', 'fuzzystrmatch', 'pgh3')
     dbcollector.setup()
 
 if __name__ == '__main__':
