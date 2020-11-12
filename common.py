@@ -3,7 +3,7 @@
 from . import settings
 
 if not settings.DB_SHARED:
-    from ..common import T
+    from ..common import T, logger
     from py4web import DAL
     # connect to db
     db = DAL(settings.DB_URI,
@@ -11,7 +11,7 @@ if not settings.DB_SHARED:
         lazy_tables=False, check_reserved=False
     )
 else:
-    from ..common import db, T
+    from ..common import db, T, logger
     db._check_reserved = False
 
 # from ..settings import DB_FOLDER
