@@ -9,7 +9,12 @@ BASE_DIM = 155 # meters
 MT_MAX_ZOOM = 30
 H3_MAX_ZOOM = 15
 
-def mt_tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True):
+def zoom2dims(zoom, lon, lat):
+    tt = mt.tile(lon, lat, zoom)
+    bb = mt.xy_bounds(tt)
+    return bb.right-bb.left, bb.top-bb.bottom
+
+def mt_tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True, more=False):
     """
     lon  @float : Center longitude.
     lat  @float : Center latitude.
@@ -31,9 +36,9 @@ def mt_tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True):
                 break
         elif not asc:
             break
-    return tt
+    return tt if not more else (tt, resolution,)
 
-def h3_tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True):
+def h3_tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True, more=False):
 
     osmproj = pyproj.Proj("epsg:3857")
 
@@ -50,10 +55,10 @@ def h3_tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True):
         if (asc and dist < bdim) or (not asc and dist > bdim):
             break
 
-    return tile
+    return tile if not more else (tile, resolution,)
 
-def tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True, classic=False):
+def tile_by_dim(lon, lat, bdim=BASE_DIM, asc=True, classic=False, more=False):
     if classic:
-        return mt_tile_by_dim(lon, lat, bdim=bdim, asc=asc)
+        return mt_tile_by_dim(lon, lat, bdim=bdim, asc=asc, more=more)
     else:
-        return h3_tile_by_dim(lon, lat, bdim=bdim, asc=asc)
+        return h3_tile_by_dim(lon, lat, bdim=bdim, asc=asc, more=more)
