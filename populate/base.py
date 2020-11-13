@@ -58,7 +58,7 @@ class BaseParser(__Base__):
     # def save_addons(self, key, addons):
     #     """ """
 
-    def _save_info(self, rec_or_sid, gtype, tags=None, properties=None, attributes=None):
+    def _save_info(self, rec_or_sid, gtype, tags=None, properties=None, attributes=None, merge=False):
         """
         rec    @row :
         sid @string : The entity identifier restricted to the data source environment.
@@ -72,11 +72,18 @@ class BaseParser(__Base__):
                     properties = properties,
                     attributes = attributes,
                 **kw)
-            else:
+            elif not merge:
                 rec.update_record(
                     tags = tags,
                     properties = properties,
                     attributes = attributes,
+                **kw)
+                id = rec.id
+            else:
+                rec.update_record(
+                    tags = None if (rec.tags is None and tags is None) else dict(rec.tags or {}, **(tags or {})),
+                    properties = None if (rec.properties is None and properties is None) else dict(rec.properties or {}, **(properties or {})),
+                    attributes = None if (rec.attributes is None and attributes is None) else dict(rec.attributes or {}, **(attributes or {})),
                 **kw)
                 id = rec.id
             logger.debug(f"Inserted info record with id: {id}")

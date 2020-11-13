@@ -10,7 +10,7 @@ myhashids = Hashids()
 class __CommonMethods__(object):
     """docstring for __FeatureParser__."""
 
-    def parse_feature(self, feature):
+    def parse_feature(self, feature, merge=False):
         """ """
         method_name = feature["geometry"]["type"]
         try:
@@ -42,18 +42,19 @@ class NodeParser(BaseParser, __CommonMethods__):
         self.tags_on_update = tags_on_update
         self.properties_on_update = properties_on_update
 
-    def _parsePoint(self, feature):
+    def _parsePoint(self, feature, merge=False):
         """ """
         info_id = self._save_info(feature["id"],
             gtype = 'node',
             tags = feature.get('tags'),
-            properties = feature["properties"]
+            properties = feature["properties"],
+            merge = merge
         )
         coordinates = feature["geometry"]["coordinates"]
         node_id = self._save_node(info_id, *coordinates)
         return info_id
 
-    def parse_features(self, features):
+    def parse_features(self, features, merge=False):
         """
         features api:
             Standard geojson feature with additional optional property "tags"
@@ -70,7 +71,7 @@ class NodeParser(BaseParser, __CommonMethods__):
             }
         """
         for feature in features:
-            info_id = self.parse_feature(feature)
+            info_id = self.parse_feature(feature, merge=merge)
 
     parse = parse_features
 
@@ -85,13 +86,14 @@ class WayParser(NodeParser):
             data = dict(info_id=info_id, node_id=node_id, sorting=sorting)
             self._save_way_node(**data)
 
-    def _parseWay(self, feature):
+    def _parseWay(self, feature, merge=False):
 
         info_id = self._save_info(
             feature["id"],
             tags = feature.get('tags'),
             properties = feature['properties'],
-            gtype="way"
+            gtype="way",
+            merge = merge
         )
 
         if feature['geometry']['type']=='LineString':
@@ -107,13 +109,14 @@ class WayParser(NodeParser):
 
 class PolygonParser(WayParser):
 
-    def _parseMultiPolygon(self, feature):
+    def _parseMultiPolygon(self, feature, merge=False):
 
         info_id = self._save_info(
             feature["id"],
             tags = dict(feature.get('tags', {}), type='multipolygon'),
             properties = feature['properties'],
-            gtype="relation"
+            gtype = "relation",
+            merge = merge
         )
 
         for wn,waynodes in enumerate(feature["geometry"]['coordinates']):
@@ -128,7 +131,7 @@ class PolygonParser(WayParser):
 
         return info_id
 
-    def _parsePolygon(self, feature):
+    def _parsePolygon(self, feature, merge=False):
         """ """
 
         check = len(feature["geometry"]['coordinates'])
@@ -140,10 +143,10 @@ class PolygonParser(WayParser):
             raise ValueError
 
         if gtype=='way':
-            info_id = self._parseWay(feature)
+            info_id = self._parseWay(feature, merge=merge)
         # gtype == 'relation'
         else:
-            info_id = self._parseMultiPolygon(feature)
+            info_id = self._parseMultiPolygon(feature, merge=merge)
 
         return info_id
 

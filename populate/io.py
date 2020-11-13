@@ -15,9 +15,18 @@ except ImportError:
 def feat(feature, source_name='__GENERIC__', copy=False, **kw):
     data = jsloads(feature) if isinstance(feature, str) else feature
     if not copy:
+        if 'merge' in kw:
+            merge = kw.pop('merge')
+        else:
+            merge = False
         if feature['geometry']['type']=='Point':
             node_parser = NodeParser(db, source_name, **kw)
-            return node_parser.parse_feature(feature)
+            return node_parser.parse_feature(feature, merge=merge)
+        elif feature['geometry']['type']=='Polygon':
+            polygon_parser = PolygonParser(db, source_name, **kw)
+            return polygon_parser.parse_feature(feature, merge=merge)
+        else:
+            NotImplementedError()
     else:
         raise NotImplementedError()
 

@@ -39,5 +39,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    setup_views()
     setup_functions()
     print("That's it!")

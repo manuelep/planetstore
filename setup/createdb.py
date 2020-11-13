@@ -33,7 +33,8 @@ if __name__ == '__main__':
         parser.print_help()
         raise Exception(message)
     else:
-        from swissknife.dummydb import ConnCollector
+        from kilimanjaro.dbutils.wiz import Wiz as ConnCollector
+        # from swissknife.dummydb import ConnCollector
         # TODO: Cache postgresq super user credentials
         # from diskcache import Cache
         # from .postgresql import setup_views
