@@ -5,7 +5,7 @@ from .pgcopy import BulkCopyer
 from .base import WTF, BaseParser, BaseCopier
 from hashids import Hashids
 myhashids = Hashids()
-
+from tqdm import tqdm
 
 class __CommonMethods__(object):
     """docstring for __FeatureParser__."""
@@ -67,10 +67,10 @@ class NodeParser(BaseParser, __CommonMethods__):
               "properties": {
                 "name": "Dinagat Islands"
               },
-              "tags": {"<tag name>": <tag value>} # OPTIONAL NON STANDARD
+              "tags": {"<tag name>": <tag value>} # OPTIONAL NON GEOJSON STANDARD
             }
         """
-        for feature in features:
+        for feature in tqdm(features):
             info_id = self.parse_feature(feature, merge=merge)
 
     parse = parse_features
@@ -154,7 +154,7 @@ class PolygonParser(WayParser):
 class NodeCopier(BaseCopier, __CommonMethods__):
     """docstring for NodeCopier."""
 
-    def _parsePoint(self, feature):
+    def _parsePoint(self, feature, **__):
         """ """
         info_id = self._save_info(feature["id"],
             gtype = 'node',
@@ -164,7 +164,7 @@ class NodeCopier(BaseCopier, __CommonMethods__):
         node_id = self._save_node(info_id, *feature["geometry"]["coordinates"])
         return info_id
 
-    def parse(self, features):
+    def parse(self, features, **__):
         """
         features api:
             Standard geojson feature with additional optional property "tags"
@@ -191,7 +191,7 @@ class NodeCopier(BaseCopier, __CommonMethods__):
 class WayCopier(NodeCopier, WayParser):
     """ """
 
-    def parse(self, features):
+    def parse(self, features, **__):
         """
         features api:
             Standard geojson feature with additional optional property "tags"
@@ -301,7 +301,32 @@ class PolygonCopier(WayCopier, PolygonParser):
     #
     #     return info_id
 
-    def parse(self, features):
+    # def parse_(self, features, **__):
+    #     """
+    #     features api:
+    #         Standard geojson feature with additional optional property "tags"
+    #         i.e.: {
+    #           "type": "Feature",
+    #           "geometry": {
+    #             "type": "Point",
+    #             "coordinates": [125.6, 10.1]
+    #           },
+    #           # OPTIONAL NON STANDARD OSM LIKE TAGS
+    #           "properties": {"name": "Dinagat Islands"},
+    #           # STANDARD OSM LIKE TAGS
+    #           "tags": {"<tag name>": <tag value>}
+    #         }
+    #     """
+    #
+    #     with BulkCopyer(self.db.relation) as self._insrelation, \
+    #         BulkCopyer(self.db.way_node) as self._insways, \
+    #         BulkCopyer(self.db.node) as self._insnodes, \
+    #         BulkCopyer(self.db.info) as self._insinfo:
+    #
+    #         for feature in features:
+    #             yield self.parse_feature(feature)
+
+    def parse(self, features, **__):
         """
         features api:
             Standard geojson feature with additional optional property "tags"
@@ -323,5 +348,5 @@ class PolygonCopier(WayCopier, PolygonParser):
             BulkCopyer(self.db.node) as self._insnodes, \
             BulkCopyer(self.db.info) as self._insinfo:
 
-            for feature in features:
+            for feature in tqdm(features):
                 info_id = self.parse_feature(feature)

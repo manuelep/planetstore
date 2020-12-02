@@ -12,6 +12,8 @@ try:
 except ImportError:
     from json import loads as jsloads
 
+from tqdm import tqdm
+
 def feat(feature, source_name='__GENERIC__', copy=False, **kw):
     data = jsloads(feature) if isinstance(feature, str) else feature
     if not copy:
@@ -28,7 +30,15 @@ def feat(feature, source_name='__GENERIC__', copy=False, **kw):
         else:
             NotImplementedError()
     else:
-        raise NotImplementedError()
+        if feature['geometry']['type']=='Point':
+            node_parser = NodeCopier(db, source_name, **kw)
+            return node_parser.parse_feature(feature)
+        elif feature['geometry']['type']=='Polygon':
+            polygon_parser = PolygonCopier(db, source_name, **kw)
+            return polygon_parser.parse_feature(feature)
+        else:
+            NotImplementedError()
+    raise NotImplementedError()
 
 def json(collection, source_name='__GENERIC__', copy=False, **kw):
     data = jsloads(collection) if isinstance(collection, str) else collection

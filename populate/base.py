@@ -153,7 +153,7 @@ def normalize_tags_for_db(kwargs):
 class BaseCopier(__Base__):
     """docstring for BaseCopier."""
 
-    def _save_info(self, sid, gtype, tags=None, properties=None, attributes=None):
+    def _save_info(self, sid, gtype, tags=None, properties=None, attributes=None, **__):
         """
         sid @string : The entity identifier restricted to the data source environment.
         tags  @dict : OSM like tags
