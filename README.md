@@ -67,6 +67,11 @@ content adapted to your needs:
     > **WARNING**
     > the script will ask for necessary PostgreSQL power user credentials
 
+    > **Note**
+    > If, maybe trying to reset your db you'll get following exception
+    > you can try *running again the script*
+    > `psycopg2.errors.UndefinedObject: ERRORE:  il tipo geometry non esiste`
+
 1. Run the script for setting up views (*named queries*)
 
         ::sh
