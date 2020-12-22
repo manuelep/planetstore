@@ -100,7 +100,7 @@ def tilebbox(dist, lon, lat, bdim=BASE_DIM, buffer=4, format=None):
         keys = ('w', 's', 'e', 'n',)
         return dict(zip(keys, map(str, (ul.lng, br.lat, br.lng, ul.lat,)))) # minx, miny, maxx, maxy
     else:
-        raise NotImplementedError
+        raise NotImplementedError()
 
 def boxtiles(dist, lon, lat, bdim=BASE_DIM, buffer=4):
     """ """
